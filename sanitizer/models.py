@@ -34,7 +34,8 @@ class SanitizedCharField(models.CharField):
             css_sanitizer = CSSSanitizer(allowed_css_properties=self._sanitizer_allowed_styles)
             value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
                 attributes=self._sanitizer_allowed_attributes, 
-                css_sanitizer=css_sanitizer, strip=self._sanitizer_strip)
+                css_sanitizer=css_sanitizer, strip=self._sanitizer_strip,
+                strip_comments=self._sanitizer_strip)
         else:
             value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
                 attributes=self._sanitizer_allowed_attributes, 
@@ -58,11 +59,13 @@ class SanitizedTextField(models.TextField):
             css_sanitizer = CSSSanitizer(allowed_css_properties=self._sanitizer_allowed_styles)
             value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
                 attributes=self._sanitizer_allowed_attributes, 
-                css_sanitizer=css_sanitizer, strip=self._sanitizer_strip)
+                css_sanitizer=css_sanitizer, strip=self._sanitizer_strip,
+                strip_comments=self._sanitizer_strip)
         else:
             value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
                 attributes=self._sanitizer_allowed_attributes, 
-                styles=self._sanitizer_allowed_styles, strip=self._sanitizer_strip)
+                styles=self._sanitizer_allowed_styles, strip=self._sanitizer_strip,
+                strip_comments=self._sanitizer_strip)
 
     def get_prep_value(self, value):
         value = super(SanitizedTextField, self).get_prep_value(value)
@@ -70,11 +73,13 @@ class SanitizedTextField(models.TextField):
             css_sanitizer = CSSSanitizer(allowed_css_properties=self._sanitizer_allowed_styles)
             value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
                 attributes=self._sanitizer_allowed_attributes, 
-                css_sanitizer=css_sanitizer, strip=self._sanitizer_strip)
+                css_sanitizer=css_sanitizer, strip=self._sanitizer_strip,
+                strip_comments=self._sanitizer_strip)
         else:
             value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
                 attributes=self._sanitizer_allowed_attributes, 
-                styles=self._sanitizer_allowed_styles, strip=self._sanitizer_strip)
+                styles=self._sanitizer_allowed_styles, strip=self._sanitizer_strip,
+                strip_comments=self._sanitizer_strip)
 
 
 if 'south' in settings.INSTALLED_APPS:
