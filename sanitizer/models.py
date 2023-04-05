@@ -11,7 +11,10 @@ else:
     from django.utils.encoding import smart_unicode
 
 import bleach
-from bleach.css_sanitizer import CSSSanitizer
+from sanitizer.utils import is_bleach_version_5
+
+if is_bleach_version_5():
+    from bleach.css_sanitizer import CSSSanitizer
 
 
 class SanitizedCharField(models.CharField):
@@ -27,11 +30,15 @@ class SanitizedCharField(models.CharField):
 
     def to_python(self, value):
         value = super(SanitizedCharField, self).to_python(value)
-        css_sanitizer = CSSSanitizer(allowed_css_properties=self._sanitizer_allowed_styles)
-        value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
-            attributes=self._sanitizer_allowed_attributes, 
-            css_sanitizer=css_sanitizer, strip=self._sanitizer_strip)
-        return smart_unicode(value)
+        if is_bleach_version_5():
+            css_sanitizer = CSSSanitizer(allowed_css_properties=self._sanitizer_allowed_styles)
+            value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
+                attributes=self._sanitizer_allowed_attributes, 
+                css_sanitizer=css_sanitizer, strip=self._sanitizer_strip)
+        else:
+            value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
+                attributes=self._sanitizer_allowed_attributes, 
+                styles=self._sanitizer_allowed_styles, strip=self._sanitizer_strip)
 
 
 class SanitizedTextField(models.TextField):
@@ -47,19 +54,27 @@ class SanitizedTextField(models.TextField):
 
     def to_python(self, value):
         value = super(SanitizedTextField, self).to_python(value)
-        css_sanitizer = CSSSanitizer(allowed_css_properties=self._sanitizer_allowed_styles)
-        value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
-            attributes=self._sanitizer_allowed_attributes, 
-            css_sanitizer=css_sanitizer, strip=self._sanitizer_strip)
-        return smart_unicode(value)
+        if is_bleach_version_5():
+            css_sanitizer = CSSSanitizer(allowed_css_properties=self._sanitizer_allowed_styles)
+            value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
+                attributes=self._sanitizer_allowed_attributes, 
+                css_sanitizer=css_sanitizer, strip=self._sanitizer_strip)
+        else:
+            value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
+                attributes=self._sanitizer_allowed_attributes, 
+                styles=self._sanitizer_allowed_styles, strip=self._sanitizer_strip)
 
     def get_prep_value(self, value):
         value = super(SanitizedTextField, self).get_prep_value(value)
-        css_sanitizer = CSSSanitizer(allowed_css_properties=self._sanitizer_allowed_styles)
-        value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
-            attributes=self._sanitizer_allowed_attributes, 
-            css_sanitizer=css_sanitizer, strip=self._sanitizer_strip)
-        return value
+        if is_bleach_version_5():
+            css_sanitizer = CSSSanitizer(allowed_css_properties=self._sanitizer_allowed_styles)
+            value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
+                attributes=self._sanitizer_allowed_attributes, 
+                css_sanitizer=css_sanitizer, strip=self._sanitizer_strip)
+        else:
+            value = bleach.clean(value, tags=self._sanitizer_allowed_tags,
+                attributes=self._sanitizer_allowed_attributes, 
+                styles=self._sanitizer_allowed_styles, strip=self._sanitizer_strip)
 
 
 if 'south' in settings.INSTALLED_APPS:

@@ -4,7 +4,10 @@ from django.template.defaultfilters import stringfilter
 from django import template
 
 import bleach
-from bleach.css_sanitizer import CSSSanitizer
+from sanitizer.utils import is_bleach_version_5
+
+if is_bleach_version_5():
+    from bleach.css_sanitizer import CSSSanitizer
 
 import sys
 if sys.version_info[0] == 3:
@@ -31,10 +34,15 @@ def sanitize(value):
 
     '''
     if isinstance(value, basestring):
-        css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_STYLES)
-        value = bleach.clean(value, tags=ALLOWED_TAGS,
-                             attributes=ALLOWED_ATTRIBUTES, 
-                             css_sanitizer=css_sanitizer, strip=False)
+        if is_bleach_version_5():
+            css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_STYLES)
+            value = bleach.clean(value, tags=ALLOWED_TAGS,
+                                 attributes=ALLOWED_ATTRIBUTES, 
+                                 css_sanitizer=css_sanitizer, strip=False)
+        else:
+            value = bleach.clean(value, tags=ALLOWED_TAGS,
+                                 attributes=ALLOWED_ATTRIBUTES, 
+                                 styles=ALLOWED_STYLES, strip=False)
     return value
 
 register.filter('escape_html', sanitize)
@@ -54,10 +62,15 @@ def strip_filter(value):
 
     '''
     if isinstance(value, basestring):
-        css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_STYLES)
-        value = bleach.clean(value, tags=ALLOWED_TAGS,
-                             attributes=ALLOWED_ATTRIBUTES, 
-                             css_sanitizer=css_sanitizer, strip=True)
+        if is_bleach_version_5():
+            css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_STYLES)
+            value = bleach.clean(value, tags=ALLOWED_TAGS,
+                                 attributes=ALLOWED_ATTRIBUTES, 
+                                 css_sanitizer=css_sanitizer, strip=True)
+        else:
+            value = bleach.clean(value, tags=ALLOWED_TAGS,
+                                 attributes=ALLOWED_ATTRIBUTES, 
+                                 styles=ALLOWED_STYLES, strip=True)
     return value
 
 register.filter('strip_html', strip_filter)
@@ -112,10 +125,15 @@ def escape_html(value, allowed_tags=[], allowed_attributes=[],
 
     """
     if isinstance(value, basestring):
-        css_sanitizer = CSSSanitizer(allowed_css_properties=allowed_styles)
-        value = bleach.clean(value, tags=allowed_tags,
-                             attributes=allowed_attributes, 
-                             css_sanitizer=css_sanitizer, strip=False)
+        if is_bleach_version_5():
+            css_sanitizer = CSSSanitizer(allowed_css_properties=allowed_styles)
+            value = bleach.clean(value, tags=allowed_tags,
+                                 attributes=allowed_attributes, 
+                                 css_sanitizer=css_sanitizer, strip=False)
+        else:
+            value = bleach.clean(value, tags=allowed_tags,
+                                 attributes=allowed_attributes, 
+                                 styles=allowed_styles, strip=False)
     return value
 
 
@@ -141,8 +159,13 @@ def strip_html(value, allowed_tags=[], allowed_attributes=[],
 
     """
     if isinstance(value, basestring):
-        css_sanitizer = CSSSanitizer(allowed_css_properties=allowed_styles)
-        value = bleach.clean(value, tags=allowed_tags,
-                             attributes=allowed_attributes, 
-                             css_sanitizer=css_sanitizer, strip=True)
+        if is_bleach_version_5():
+            css_sanitizer = CSSSanitizer(allowed_css_properties=allowed_styles)
+            value = bleach.clean(value, tags=allowed_tags,
+                                 attributes=allowed_attributes, 
+                                 css_sanitizer=css_sanitizer, strip=True)
+        else:
+            value = bleach.clean(value, tags=allowed_tags,
+                                 attributes=allowed_attributes, 
+                                 styles=allowed_styles, strip=True)
     return value
