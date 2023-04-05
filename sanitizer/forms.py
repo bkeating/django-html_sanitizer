@@ -1,6 +1,7 @@
 from django import forms
 
 import bleach
+from bleach.css_sanitizer import CSSSanitizer
 
 
 class SanitizedCharField(forms.CharField):
@@ -17,6 +18,7 @@ class SanitizedCharField(forms.CharField):
 
     def clean(self, value):
         value = super(SanitizedCharField, self).clean(value)
+        css_sanitizer = CSSSanitizer(allowed_css_properties=self._allowed_styles)
         return bleach.clean(value, tags=self._allowed_tags,
             attributes=self._allowed_attributes, 
-            styles=self._allowed_styles, strip=self._strip)
+            css_sanitizer=css_sanitizer, strip=self._strip)
